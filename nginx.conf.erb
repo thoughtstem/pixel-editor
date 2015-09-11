@@ -1,0 +1,21 @@
+worker_processes 1;
+error_log stderr;
+pid nginx.pid;
+daemon off;
+
+events {
+  worker_connections 768;
+}
+
+http {
+  include mime.types;
+  server {
+    # HACK: Fixes Facebook's canvas pages by turning POST error to GET for same uri.
+    error_page 405 =200 $uri;
+
+    listen <%= ENV['PORT'] %>;
+    server_name  _;
+    root /app;
+    index index.html;
+  }
+}
