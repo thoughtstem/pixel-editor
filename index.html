@@ -7,6 +7,51 @@
   
   <body>
     <script>
+
+      var LtmModule = {
+        init: function(){
+          //console.log(editor.fromDataURL())
+          window.parent.postMessage("Hello From ddd", "*");
+          window.addEventListener(
+          "message",
+          function (event) {
+            console.log("frame got a message:")
+            console.log(event.data.imgData)
+            console.log("------------------")
+            if(event.origin !== "http://localhost:3000") return
+            LtmModule.loadImg(event.data.imgData);
+          },
+          false);
+        },
+        loadImg: function(blob) {
+          var img = new Image();
+
+          img.src = 'data:image/bmp;base64,'+blob;
+          var context = $("canvas")[0].getContext('2d');
+          var previewContext = $(".thumbnail").find("canvas")[0].getContext('2d');
+
+          img.onload = function() {
+            var newSize = editor.pixelExtent().copy();
+            newSize.height =  img.height;
+            newSize.width = img.width;
+            var actionData = {size: newSize};
+            editor.Command.Resize(actionData).execute();
+
+            context.clearRect(0,0,img.width, img.height)
+            context.drawImage(img, 0,0);
+
+            previewContext.clearRect(0,0,img.width, img.height)
+            previewContext.drawImage(img, 0,0);
+          };
+        }
+      }
+
+
+      $(document).ready(function(){
+        LtmModule.init();
+      })
+
+
   window["STRd6/pixel-editor:master"] = function(PACKAGE) {
     delete window["STRd6/pixel-editor:master"];
     var oldRequire = window.Require;
