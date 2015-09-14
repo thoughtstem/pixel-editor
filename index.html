@@ -9,17 +9,31 @@
     <script>
 
       var LtmModule = {
+        currentImg:null,
         init: function(){
-          //console.log(editor.fromDataURL())
-          window.parent.postMessage("Hello From ddd", "*");
+
+          LtmModule.mutateGui()
+
           window.addEventListener(
           "message",
           function (event) {
-            console.log("frame got a message:")
-            console.log(event.data.imgData)
-            console.log("------------------")
+
+
             if(event.origin !== "http://localhost:3000") return
-            LtmModule.loadImg(event.data.imgData);
+
+            var packet = event.data
+            console.log("frame got a message:")
+            console.log(packet)
+            console.log("------------------")
+            switch(packet.action) {
+              case "loadImg":
+                LtmModule.currentImg = packet.img
+                LtmModule.loadImg(LtmModule.currentImg.imgBlob)
+                    break;
+              default:
+                    throw "Err in LtmModule.init router: no proper action given in request"
+            }
+
           },
           false);
         },
@@ -43,6 +57,16 @@
             previewContext.clearRect(0,0,img.width, img.height)
             previewContext.drawImage(img, 0,0);
           };
+        },
+        mutateGui: function(){
+          $(".action[title='ctrl+s']").remove()
+          $("<div>Save to LTM</div>")
+                  .addClass("action")
+                  .appendTo($(".actions"))
+                  .click(function(){
+                    LtmModule.currentImg.imgBlob = $("canvas")[0].toDataURL().split(",")[1]
+                    window.parent.postMessage({action: "saveImg", img: LtmModule.currentImg}, "*")
+                  })
         }
       }
 
