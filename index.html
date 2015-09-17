@@ -16,7 +16,7 @@
           LtmModule.mutateGui()
 
           $(".main .viewport canvas").mousedown(function(){
-            console.log("Changed canvas!!!!!")
+            //console.log("Changed canvas!!!!!")
             LtmModule.is_committed = false
           })
 
@@ -46,7 +46,13 @@
                   LtmModule.is_committed = true
                   window.parent.postMessage({action: "closeEditor", img: LtmModule.currentImg}, "*")
                 }
-                    break;
+                break;
+              case "alert":
+
+                var temp = $("#current_image_name_header").html()
+                $("#current_image_name_header").html(packet.message)
+                setTimeout(function(){$("#current_image_name_header").html(temp)}, 2500)
+                break;
               default:
                     throw "Err in LtmModule.init router: no proper action given in request"
             }
