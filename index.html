@@ -23,12 +23,12 @@
           window.addEventListener(
           "message",
           function (event) {
-            console.log("bottom got a message:")
-            console.log(event)
-            console.log("******************")
+//            console.log("bottom got a message:")
+//            console.log(event)
+//            console.log("******************")
             if(event.origin !== "http://localhost:3000" &&
                event.origin !== "http://thoughtstem.github.io" &&
-               event.origin !== "http://mod.learntomod.com") throw "security issue"
+               event.origin !== "http://mod.learntomod.com") { throw "security issue in pixel-editor" }
             var packet = event.data
             switch(packet.action) {
               case "loadImg":
@@ -96,6 +96,8 @@
                       .css("text-align", "center")
                       .attr("id", "current_image_name_header")
           $("body").prepend(node)
+          $(".action")
+                  .css("width", "55px").css("height", "60px")
         }
       }
       $(document).ready(function(){
