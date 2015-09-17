@@ -10,30 +10,41 @@
 
       var LtmModule = {
         currentImg:null,
+        is_committed:true,
+        confirm_message:"",
         init: function(){
-
           LtmModule.mutateGui()
+
+          $(".main .viewport canvas").mousedown(function(){
+            console.log("Changed canvas!!!!!")
+            LtmModule.is_committed = false
+          })
 
           window.addEventListener(
           "message",
           function (event) {
-
-
             if(event.origin !== "http://localhost:3000") return
-
             var packet = event.data
-            console.log("frame got a message:")
-            console.log(packet)
-            console.log("------------------")
             switch(packet.action) {
               case "loadImg":
-                LtmModule.currentImg = packet.img
-                LtmModule.loadImg(LtmModule.currentImg.imgBlob)
+                if(LtmModule.is_committed || (!LtmModule.is_committed && confirm("You have un-comitted changes.  Are you sure you want to load a different image?"))) {
+                  LtmModule.currentImg = packet.img
+                  var imgPath = LtmModule.currentImg.path.split("/")
+                  imgPath.shift() //remove first element
+                  $("#current_image_name_header").html(imgPath.join("/"))
+                  LtmModule.loadImg(LtmModule.currentImg.data)
+                  LtmModule.is_committed = true
+                }
+                break;
+              case "confirmClose":
+                if(LtmModule.is_committed || (!LtmModule.is_committed && confirm("You have un-comitted changes.  Are you sure you want to close the editor?"))) {
+                  LtmModule.is_committed = true
+                  window.parent.postMessage({action: "closeEditor", img: LtmModule.currentImg}, "*")
+                }
                     break;
               default:
                     throw "Err in LtmModule.init router: no proper action given in request"
             }
-
           },
           false);
         },
@@ -59,18 +70,29 @@
           };
         },
         mutateGui: function(){
+          var bgImage = $(".action[title='ctrl+s']").css("background-image")
           $(".action[title='ctrl+s']").remove()
-          $("<div>Save to LTM</div>")
+          $("<div></div>")
                   .addClass("action")
                   .appendTo($(".actions"))
+                  .css("background-image", bgImage)
+                  .append($("<div>Commit Change</div>").addClass("text"))
                   .click(function(){
-                    LtmModule.currentImg.imgBlob = $("canvas")[0].toDataURL().split(",")[1]
+                    LtmModule.currentImg.data = $("canvas")[0].toDataURL().split(",")[1] //get the updated blob
+                    LtmModule.is_committed = true
                     window.parent.postMessage({action: "saveImg", img: LtmModule.currentImg}, "*")
                   })
+          var node=$("<div></div>")
+                      .css("width", "100%")
+                      .css("height", "20px")
+                      .css("position", "absolute")
+                      .css("z-index", "10000")
+                      .css("top", "0").css("left", "0")
+                      .css("text-align", "center")
+                      .attr("id", "current_image_name_header")
+          $("body").prepend(node)
         }
       }
-
-
       $(document).ready(function(){
         LtmModule.init();
       })
