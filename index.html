@@ -23,7 +23,12 @@
           window.addEventListener(
           "message",
           function (event) {
-            if(event.origin !== "http://localhost:3000") return
+            console.log("bottom got a message:")
+            console.log(event)
+            console.log("******************")
+            if(event.origin !== "http://localhost:3000" ||
+               event.origin !== "http://thoughtstem.github.io" ||
+               event.origin !== "http://mod.learntomod.com") return
             var packet = event.data
             switch(packet.action) {
               case "loadImg":
