@@ -26,14 +26,14 @@
 //            console.log("bottom got a message:")
 //            console.log(event)
 //            console.log("******************")
-            if(event.origin !== "http://localhost:3000" &&
-               event.origin !== "http://thoughtstem.github.io" &&
-               event.origin !== "https://thoughtstem.github.io" &&
-               event.origin !== "http://52.203.199.244" &&
-               event.origin !== "https://52.203.199.244" &&
-               event.origin !== "http://mod.learntomod.com" &&
-               event.origin !== "https://mod.learntomod.com"
-            ) { throw  "security issue in pixel-editor" }
+           // if(event.origin !== "http://localhost:3000" &&
+            //   event.origin !== "http://thoughtstem.github.io" &&
+            //   event.origin !== "https://thoughtstem.github.io" &&
+            //   event.origin !== "http://52.203.199.244" &&
+            //   event.origin !== "https://52.203.199.244" &&
+            //   event.origin !== "http://mod.learntomod.com" &&
+            //   event.origin !== "https://mod.learntomod.com"
+            //) { throw  "security issue in pixel-editor" }
             var packet = event.data
             switch(packet.action) {
               case "loadImg":
